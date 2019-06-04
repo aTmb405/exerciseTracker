@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
+const shortid = require('shortid')
 
 const cors = require('cors')
 
@@ -42,6 +43,19 @@ app.use((err, req, res, next) => {
   res.status(errCode).type('txt')
     .send(errMessage)
 })
+
+var userSchema = new mongoose.Schema({
+  user: {
+    type: String,
+    unique: true
+  },
+  _id: {
+    type: String,
+    default: shortid.generate
+  }
+});
+
+var URL = mongoose.model('URL', urlSchema);
 
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port)
