@@ -54,8 +54,10 @@ var userSchema = new mongoose.Schema({
     unique: true
   },
   _id: String,
-  description: String,
-  duration: Number,
+  log: [{ 
+    description: String,
+    duration: Number
+  }],
   created: Date
 });
 
@@ -66,14 +68,17 @@ var exerciseSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  description: {
-    type: String,
-    required: true
-  },
-  duration: {
-    type: Number,
-    required: true
-  },
+  count: Number,
+  log: [{
+    description: {
+      type: String,
+      required: true
+    },
+    duration: {
+      type: Number,
+      required: true
+    }
+  }],
   created: Date
 });
 
@@ -113,15 +118,24 @@ app.post("/api/exercise/add", function (req, res, next) {
   var description = req.body.description;
   var duration = req.body.duration;
   var newExercise = {description: description, duration: duration, created: Date.now()};
-  User.findOneAndUpdate(
-    {_id: userid}, 
-    newExercise, 
-    {new: true}, function(err, updatedUser) {
+  User.findById({_id: userid}, function(err, user) {
     if(err) {
       console.log(err);
     } else {
-      console.log(updatedUser)
-      res.json(updatedUser);
+      console.log(user)
+      user.count = user.count + 1;
+      user.log.push(newExercise);
+      user.save((error, user) => {
+        if(error) return next(error);
+        // const data = { 
+        //   username: user.username,
+        //   _id: user._id,
+        //   description: description,
+        //   duration: duration,
+        //   date: Date.now()
+        // };
+        res.json(user);
+      });
     }
   });
 });
