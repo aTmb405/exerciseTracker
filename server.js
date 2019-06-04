@@ -1,17 +1,20 @@
+require('dotenv').config()
 const express = require('express')
 const app = express()
+const mongo = require('mongodb')
 const bodyParser = require('body-parser')
 const shortid = require('shortid')
+
 
 const cors = require('cors')
 
 const mongoose = require('mongoose')
-mongoose.connect(process.env.MLAB_URI || 'mongodb://localhost/exercise-track' )
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true });
 
 app.use(cors())
 
 app.use(bodyParser.urlencoded({extended: false}))
-app.use(bodyParser.json())
+// app.use(bodyParser.json())
 
 
 app.use(express.static('public'))
@@ -49,10 +52,7 @@ var userSchema = new mongoose.Schema({
     type: String,
     unique: true
   },
-  _id: {
-    type: String,
-    default: shortid.generate
-  }
+  _id: String
 });
 
 var User = mongoose.model('User', userSchema);
@@ -77,17 +77,15 @@ var Exercise = mongoose.model('Exercise', exerciseSchema);
 
 // create user  -> /api/exercise/new-user 
 app.post("/api/exercise/new-user ", function (req, res, next) {
-User.create({name: req.body.username}, function(err, newUser){
-      if(err){
-          console.log(err);
-      } else {
-          console.log(newUser);
-      }
-    });
-    res.json({name: req.body.username});
-  } else {
-    res.json({username: "NO"});
-  }
+  var newUser = {name: req.body.username, _id: shortid.generate()}
+  User.create(newUser, function(err, newlyCreated){
+    if(err) {
+        console.log(err);
+    } else {
+        console.log(newlyCreated);
+    }
+  });
+  res.json(newUser);
 });
 // all users    -> /api/exercise/users
 // add exercise -> /api/exercise/add
