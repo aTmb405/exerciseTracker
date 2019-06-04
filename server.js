@@ -17,7 +17,7 @@ app.use(bodyParser.urlencoded({extended: false}))
 // app.use(bodyParser.json())
 
 
-app.use(express.static('public'))
+app.use('/public', express.static(process.cwd() + '/public'));
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html')
 });
@@ -76,8 +76,11 @@ var exerciseSchema = new mongoose.Schema({
 var Exercise = mongoose.model('Exercise', exerciseSchema);
 
 // create user  -> /api/exercise/new-user 
-app.post("/api/exercise/new-user ", function (req, res, next) {
-  var newUser = {name: req.body.username, _id: shortid.generate()}
+app.post("/api/exercise/new-user", function (req, res, next) {
+  var name = req.body.username;
+  var short = shortid.generate();
+  var newUser = {name: name, _id: short};
+  console.log(newUser);
   User.create(newUser, function(err, newlyCreated){
     if(err) {
         console.log(err);
