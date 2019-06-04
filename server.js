@@ -125,15 +125,15 @@ app.get("/api/exercise/log", function(req, res) {
     ? toDate : currentDate);
       
       var logs = user.log
-      .filter(l => fromFilter(l.date, req.query.from))
-      .filter(l => toFilter(l.date, req.query.to));
+      .filter(l => fromFilter(l.created, req.query.from))
+      .filter(l => toFilter(l.created, req.query.to));
       
       if (limit && limit < logs.length) {
         logs.length = limit;
         res.send(logs);
       } else {
-        res.send(logs);
-        // res.json(user);
+        //res.json(logs);
+        res.json(user);
       }
     }
   });
