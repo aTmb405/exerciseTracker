@@ -45,7 +45,7 @@ app.use((err, req, res, next) => {
 })
 
 var userSchema = new mongoose.Schema({
-  user: {
+  name: {
     type: String,
     unique: true
   },
@@ -55,7 +55,43 @@ var userSchema = new mongoose.Schema({
   }
 });
 
-var URL = mongoose.model('URL', urlSchema);
+var User = mongoose.model('User', userSchema);
+
+var exerciseSchema = new mongoose.Schema({
+  userid: {
+    type: String,
+    required: true
+  },
+  description: {
+    type: String,
+    required: true
+  },
+  duration: {
+    type: Number,
+    required: true
+  },
+  created: Date
+});
+
+var Exercise = mongoose.model('Exercise', exerciseSchema);
+
+// create user  -> /api/exercise/new-user 
+app.post("/api/exercise/new-user ", function (req, res, next) {
+User.create({name: req.body.username}, function(err, newUser){
+      if(err){
+          console.log(err);
+      } else {
+          console.log(newUser);
+      }
+    });
+    res.json({name: req.body.username});
+  } else {
+    res.json({username: "NO"});
+  }
+});
+// all users    -> /api/exercise/users
+// add exercise -> /api/exercise/add
+// exercise log -> /api/exercise/log
 
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port)
