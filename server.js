@@ -112,9 +112,9 @@ app.post("/api/exercise/add", function (req, res, next) {
   var userid = req.body.userId;
   var description = req.body.description;
   var duration = req.body.duration;
-  var newExercise = {description: description, duration: duration, created: Date.now};
+  var newExercise = {description: description, duration: duration, created: Date.now()};
   User.findOneAndUpdate(
-    userid, 
+    {_id: userid}, 
     newExercise, 
     {new: true}, function(err, updatedUser) {
     if(err) {
