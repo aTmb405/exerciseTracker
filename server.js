@@ -14,7 +14,7 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true });
 app.use(cors())
 
 app.use(bodyParser.urlencoded({extended: false}))
-// app.use(bodyParser.json())
+app.use(bodyParser.json())
 
 
 app.use(express.static('public'))
@@ -75,6 +75,18 @@ var exerciseSchema = new mongoose.Schema({
 
 var Exercise = mongoose.model('Exercise', exerciseSchema);
 
+// all users    -> /api/exercise/users
+app.get("/api/exercise/users", function(req, res) {
+  User.findOne({shortURL: req.params.shortURL}, function(err, url) {
+    if(err) {
+      console.log(err);
+    } else {
+      console.log("Redirecting to " + url.originalURL)
+      res.redirect(url.originalURL);
+    }
+  });
+});
+
 // create user  -> /api/exercise/new-user 
 app.post("/api/exercise/new-user", function (req, res, next) {
   var name = req.body.username;
@@ -90,7 +102,7 @@ app.post("/api/exercise/new-user", function (req, res, next) {
   });
   res.json(newUser);
 });
-// all users    -> /api/exercise/users
+
 // add exercise -> /api/exercise/add
 // exercise log -> /api/exercise/log
 
