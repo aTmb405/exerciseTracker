@@ -118,9 +118,25 @@ app.get("/api/exercise/log", function(req, res) {
     if (err) {
       console.log(err);
     } else {
-      res.json(user);
+      var limit = req.query.limit;
+      
+      var fromFilter = (currentDate, fromDate) => (Date.parse(currentDate) > Date.parse(fromDate) ? fromDate : currentDate);
+      var toFilter = (currentDate, toDate) => (Date.parse(currentDate) < Date.parse(toDate)
+    ? toDate : currentDate);
+      
+      var logs = user.log
+      .filter(l => fromFilter(l.date, req.query.from))
+      .filter(l => toFilter(l.date, req.query.to));
+      
+      if (limit && limit < logs.length) {
+        logs.length = limit;
+        res.send(logs);
+      } else {
+        res.send(logs);
+        // res.json(user);
+      }
     }
-  })
+  });
 });
 
 const listener = app.listen(process.env.PORT || 3000, () => {
