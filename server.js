@@ -109,8 +109,12 @@ app.post("/api/exercise/add", function (req, res, next) {
   var userid = req.body.userId;
   var description = req.body.description;
   var duration = req.body.duration;
-  var newExercise = {userid: userid, description: description, duration: duration, created: Date};
-  
+  var newExercise = {description: description, duration: duration, created: Date};
+  User.findOneAndUpdate(
+    {_id: userid}, 
+    newExercise,
+    {new: true});
+  res.json()
 });
 // exercise log -> /api/exercise/log
 
