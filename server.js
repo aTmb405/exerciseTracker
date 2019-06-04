@@ -1,3 +1,4 @@
+'use strict';
 require('dotenv').config()
 const express = require('express')
 const app = express()
@@ -24,9 +25,9 @@ app.get('/', (req, res) => {
 
 
 // Not found middleware
-app.use((req, res, next) => {
-  return next({status: 404, message: 'not found'})
-})
+// app.use((req, res, next) => {
+//   return next({status: 404, message: 'not found'})
+// })
 
 // Error Handling middleware
 app.use((err, req, res, next) => {
@@ -77,12 +78,12 @@ var Exercise = mongoose.model('Exercise', exerciseSchema);
 
 // all users    -> /api/exercise/users
 app.get("/api/exercise/users", function(req, res) {
-  User.findOne({shortURL: req.params.shortURL}, function(err, url) {
+  User.find({}, function(err, allUsers) {
     if(err) {
       console.log(err);
     } else {
-      console.log("Redirecting to " + url.originalURL)
-      res.redirect(url.originalURL);
+      console.log(allUsers)
+      res.json(allUsers);
     }
   });
 });
@@ -104,6 +105,13 @@ app.post("/api/exercise/new-user", function (req, res, next) {
 });
 
 // add exercise -> /api/exercise/add
+app.post("/api/exercise/add", function (req, res, next) {
+  var userid = req.body.userId;
+  var description = req.body.description;
+  var duration = req.body.duration;
+  var newExercise = {userid: userid, description: description, duration: duration, created: Date};
+  
+});
 // exercise log -> /api/exercise/log
 
 const listener = app.listen(process.env.PORT || 3000, () => {
