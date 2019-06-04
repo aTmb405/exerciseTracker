@@ -80,7 +80,7 @@ app.get("/api/exercise/users", function(req, res) {
 app.post("/api/exercise/new-user", function (req, res, next) {
   var name = req.body.username;
   var short = shortid.generate();
-  var newUser = {_id: short, name: name};
+  var newUser = {_id: short, name: name, count: 0};
   console.log(newUser);
   User.create(newUser, function(err, newlyCreated){
     if(err) {
@@ -102,7 +102,6 @@ app.post("/api/exercise/add", function (req, res, next) {
     if(err) {
       console.log(err);
     } else {
-      console.log(user.count)
       user.count += 1;
       user.log.push(newExercise);
       user.save((error, user) => {
@@ -113,6 +112,15 @@ app.post("/api/exercise/add", function (req, res, next) {
   });
 });
 // exercise log -> /api/exercise/log
+app.get("/api/exercise/log", function(req, res) {
+  User.findOne({username: req.query.username}, function(err, user) {
+    if (err) {
+      console.log(err);
+    } else {
+      res.json(user);
+    }
+  })
+});
 
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port)
