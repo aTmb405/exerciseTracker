@@ -53,7 +53,10 @@ var userSchema = new mongoose.Schema({
     type: String,
     unique: true
   },
-  _id: String
+  _id: String,
+  description: String,
+  duration: Number,
+  created: Date
 });
 
 var User = mongoose.model('User', userSchema);
@@ -109,12 +112,18 @@ app.post("/api/exercise/add", function (req, res, next) {
   var userid = req.body.userId;
   var description = req.body.description;
   var duration = req.body.duration;
-  var newExercise = {description: description, duration: duration, created: Date};
+  var newExercise = {description: description, duration: duration, created: Date.now};
   User.findOneAndUpdate(
-    {_id: userid}, 
-    newExercise,
-    {new: true});
-  res.json()
+    userid, 
+    newExercise, 
+    {new: true}, function(err, updatedUser) {
+    if(err) {
+      console.log(err);
+    } else {
+      console.log(updatedUser)
+      res.json(updatedUser);
+    }
+  });
 });
 // exercise log -> /api/exercise/log
 
