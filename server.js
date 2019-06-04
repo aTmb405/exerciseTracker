@@ -54,35 +54,16 @@ var userSchema = new mongoose.Schema({
     unique: true
   },
   _id: String,
+  count: Number,
   log: [{ 
     description: String,
-    duration: Number
+    duration: Number,
+    created: Date
   }],
-  created: Date
+  
 });
 
 var User = mongoose.model('User', userSchema);
-
-var exerciseSchema = new mongoose.Schema({
-  userid: {
-    type: String,
-    required: true
-  },
-  count: Number,
-  log: [{
-    description: {
-      type: String,
-      required: true
-    },
-    duration: {
-      type: Number,
-      required: true
-    }
-  }],
-  created: Date
-});
-
-var Exercise = mongoose.model('Exercise', exerciseSchema);
 
 // all users    -> /api/exercise/users
 app.get("/api/exercise/users", function(req, res) {
@@ -90,7 +71,6 @@ app.get("/api/exercise/users", function(req, res) {
     if(err) {
       console.log(err);
     } else {
-      console.log(allUsers)
       res.json(allUsers);
     }
   });
@@ -100,7 +80,7 @@ app.get("/api/exercise/users", function(req, res) {
 app.post("/api/exercise/new-user", function (req, res, next) {
   var name = req.body.username;
   var short = shortid.generate();
-  var newUser = {name: name, _id: short};
+  var newUser = {_id: short, name: name};
   console.log(newUser);
   User.create(newUser, function(err, newlyCreated){
     if(err) {
@@ -122,18 +102,11 @@ app.post("/api/exercise/add", function (req, res, next) {
     if(err) {
       console.log(err);
     } else {
-      console.log(user)
-      user.count = user.count + 1;
+      console.log(user.count)
+      user.count += 1;
       user.log.push(newExercise);
       user.save((error, user) => {
         if(error) return next(error);
-        // const data = { 
-        //   username: user.username,
-        //   _id: user._id,
-        //   description: description,
-        //   duration: duration,
-        //   date: Date.now()
-        // };
         res.json(user);
       });
     }
