@@ -111,6 +111,7 @@ app.post("/api/exercise/add", function (req, res, next) {
     }
   });
 });
+
 // exercise log -> /api/exercise/log
 app.get("/api/exercise/log", function(req, res) {
   User.findOne({username: req.query.username}, function(err, user) {
